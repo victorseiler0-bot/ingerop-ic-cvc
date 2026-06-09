@@ -1,5 +1,3 @@
-import { rebalance } from '../utils/rebalance'
-
 export interface RatioItem {
   key: string
   label: string
@@ -14,18 +12,19 @@ interface Props {
 }
 
 export default function LockedRatioGroup({ items, values, onChange, showIc }: Props) {
-  const pctOf = (v: number) => Math.round(v * 100)
-  const total = items.reduce((s, item) => s + pctOf(values[item.key] ?? 0), 0)
+  const total = items.reduce((s, item) => s + Math.round((values[item.key] ?? 0) * 100), 0)
+  const remaining = Math.max(0, 100 - total)
+  const full = total >= 100
 
-  const handleChange = (key: string, raw: number) => {
-    onChange(rebalance(values, key, raw))
+  const handleChange = (key: string, newPct: number) => {
+    onChange({ ...values, [key]: newPct / 100 })
   }
 
   return (
     <div className="space-y-3">
       {items.map(item => {
-        const val = Math.round((values[item.key] ?? 0) * 100) / 100  // snap to 1% step
-        const pct = pctOf(val)
+        const pct = Math.round((values[item.key] ?? 0) * 100)
+        const maxPct = pct + remaining  // bloqué quand remaining = 0
         return (
           <div key={item.key}>
             <div className="flex items-center justify-between mb-1">
@@ -33,16 +32,21 @@ export default function LockedRatioGroup({ items, values, onChange, showIc }: Pr
               <div className="flex items-center gap-3">
                 {showIc && (
                   <span className="text-xs text-gray-400">
-                    → {(showIc[item.key] * val).toFixed(1)} kg/m²
+                    → {(showIc[item.key] * (pct / 100)).toFixed(1)} kg/m²
                   </span>
                 )}
                 <span className="text-sm font-bold text-ingerop-blue w-10 text-right">{pct}%</span>
               </div>
             </div>
             <input
-              type="range" min={0} max={100} step={1} value={pct}
-              onChange={e => handleChange(item.key, parseInt(e.target.value) / 100)}
-              className="w-full h-2.5 rounded-lg appearance-none cursor-pointer"
+              type="range"
+              min={0}
+              max={maxPct}
+              step={1}
+              value={pct}
+              onChange={e => handleChange(item.key, parseInt(e.target.value))}
+              disabled={full && pct === 0}
+              className="w-full h-2.5 rounded-lg appearance-none cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
               style={{
                 background: `linear-gradient(to right, ${item.color ?? '#003A7A'} 0%, ${item.color ?? '#003A7A'} ${pct}%, #E5E7EB ${pct}%, #E5E7EB 100%)`,
                 accentColor: item.color ?? '#003A7A',
@@ -51,8 +55,24 @@ export default function LockedRatioGroup({ items, values, onChange, showIc }: Pr
           </div>
         )
       })}
-      <div className={`text-xs text-right font-medium mt-1 ${total === 100 ? 'text-gray-400' : 'text-orange-500 font-bold'}`}>
-        Total : {total}% {total === 100 ? '✓' : '⚠'}
+
+      {/* Barre de remplissage total */}
+      <div className="mt-1">
+        <div className="flex justify-between text-xs mb-1">
+          <span className={`font-medium ${full ? 'text-green-600' : 'text-gray-400'}`}>
+            {full ? '✓ 100% — curseurs bloqués' : `${total}% — encore ${remaining}% disponible`}
+          </span>
+          <span className="text-gray-400">{total}/100%</span>
+        </div>
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all"
+            style={{
+              width: `${Math.min(100, total)}%`,
+              backgroundColor: full ? '#16a34a' : '#003A7A',
+            }}
+          />
+        </div>
       </div>
     </div>
   )
