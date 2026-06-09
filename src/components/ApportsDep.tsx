@@ -160,18 +160,17 @@ export default function ApportsDep({ params: p, result: r, onChange }: Props) {
         </table>
       </div>
 
-      {/* Production thermique */}
+      {/* Production chauffage */}
       <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-ingerop-blue mb-4">Production thermique</h2>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-ingerop-blue mb-4">Production chauffage</h2>
         <LockedRatioGroup
           items={[
-            { key: 'ratioPAC',          label: 'PAC',                    color: '#003A7A' },
-            { key: 'ratioReseau',        label: 'Réseau de froid/chaleur', color: '#0066CC' },
-            { key: 'ratioChaudiere',     label: 'Chaudière gaz',          color: '#4A90D9' },
-            { key: 'ratioBiomasse',      label: 'Biomasse',               color: '#059669' },
-            { key: 'ratioGroupeFroid',   label: 'Groupe froid',           color: '#0891B2' },
+            { key: 'ratioPAC',       label: 'PAC',            color: '#003A7A' },
+            { key: 'ratioReseau',    label: 'Réseau chaleur', color: '#0066CC' },
+            { key: 'ratioChaudiere', label: 'Chaudière gaz',  color: '#4A90D9' },
+            { key: 'ratioBiomasse',  label: 'Biomasse',       color: '#059669' },
           ]}
-          values={{ ratioPAC: p.ratioPAC, ratioReseau: p.ratioReseau, ratioChaudiere: p.ratioChaudiere, ratioBiomasse: p.ratioBiomasse, ratioGroupeFroid: p.ratioGroupeFroid }}
+          values={{ ratioPAC: p.ratioPAC, ratioReseau: p.ratioReseau, ratioChaudiere: p.ratioChaudiere, ratioBiomasse: p.ratioBiomasse }}
           onChange={vals => onChange({ ...p, ...vals })}
         />
         <table className="w-full mt-4">
@@ -183,10 +182,34 @@ export default function ApportsDep({ params: p, result: r, onChange }: Props) {
           </thead>
           <tbody>
             <Row label="PAC" value={r.kWPAC} />
-            <Row label="Réseau de froid / chaleur" value={r.kWReseau} highlight />
+            <Row label="Réseau chaleur urbain" value={r.kWReseau} highlight />
             <Row label="Chaudière gaz" value={r.kWChaudiere} />
             <Row label="Biomasse" value={r.kWBiomasse} />
+          </tbody>
+        </table>
+      </div>
+
+      {/* Production froid */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-ingerop-blue mb-4">Production froid</h2>
+        <LockedRatioGroup
+          items={[
+            { key: 'ratioGroupeFroid', label: 'Groupe froid',       color: '#0891B2' },
+            { key: 'ratioReseauFroid', label: 'Réseau froid urbain', color: '#0066CC' },
+          ]}
+          values={{ ratioGroupeFroid: p.ratioGroupeFroid, ratioReseauFroid: p.ratioReseauFroid }}
+          onChange={vals => onChange({ ...p, ...vals })}
+        />
+        <table className="w-full mt-4">
+          <thead>
+            <tr className="border-b border-gray-200">
+              <th className="text-left py-2 text-xs text-gray-500 font-medium">Source</th>
+              <th className="text-right py-2 text-xs text-gray-500 font-medium">kW</th>
+            </tr>
+          </thead>
+          <tbody>
             <Row label="Groupe froid" value={r.kWGroupeFroid} highlight />
+            <Row label="Réseau froid urbain" value={r.kWReseauFroid} />
           </tbody>
         </table>
       </div>

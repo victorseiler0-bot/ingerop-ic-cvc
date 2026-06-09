@@ -16,12 +16,15 @@ export interface ApportsParams {
   ratioArmoire: number
   ratioCTA: number
 
-  // Production thermique (%)
+  // Production chauffage (% — somme = 100%)
   ratioPAC: number
-  ratioReseau: number
+  ratioReseau: number       // réseau chaleur urbain
   ratioChaudiere: number
   ratioBiomasse: number
+
+  // Production froid (% — somme = 100%)
   ratioGroupeFroid: number
+  ratioReseauFroid: number  // réseau froid urbain
 }
 
 export interface ApportsResult {
@@ -38,12 +41,15 @@ export interface ApportsResult {
   kWArmoire: number
   kWCTA: number
 
-  // Production (kW)
+  // Production chauffage (kW)
   kWPAC: number
   kWReseau: number
   kWChaudiere: number
   kWBiomasse: number
+
+  // Production froid (kW)
   kWGroupeFroid: number
+  kWReseauFroid: number
 }
 
 const COEFF_W_M2K = 5.9222  // calibré sur l'exemple Excel (479.7 kW / 9000 m² / 9 °C)
@@ -70,6 +76,7 @@ export function calculerApports(p: ApportsParams): ApportsResult {
   const kWChaudiere = Math.round(puissanceFinale * p.ratioChaudiere * 10000) / 10000
   const kWBiomasse = Math.round(puissanceFinale * p.ratioBiomasse * 10000) / 10000
   const kWGroupeFroid = Math.round(puissanceFinale * p.ratioGroupeFroid * 10000) / 10000
+  const kWReseauFroid = Math.round(puissanceFinale * p.ratioReseauFroid * 10000) / 10000
 
   return {
     puissanceEstimee,
@@ -79,6 +86,7 @@ export function calculerApports(p: ApportsParams): ApportsResult {
     puissanceApresF,
     puissanceFinale,
     kWVCV, kWPlafond, kWArmoire, kWCTA,
-    kWPAC, kWReseau, kWChaudiere, kWBiomasse, kWGroupeFroid,
+    kWPAC, kWReseau, kWChaudiere, kWBiomasse,
+    kWGroupeFroid, kWReseauFroid,
   }
 }

@@ -47,5 +47,6 @@ export const DEFAULT_APPORTS: ApportsParams = {
   ratioReseau:  0.80,
   ratioChaudiere: 0.00,
   ratioBiomasse:  0.00,
-  ratioGroupeFroid: 0.30,
+  ratioGroupeFroid:  0.30,
+  ratioReseauFroid:  0.70,
 }
