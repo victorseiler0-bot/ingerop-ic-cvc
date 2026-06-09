@@ -107,6 +107,11 @@ export default function App() {
           )}
         </div>
       </main>
+
+      {/* Footer version */}
+      <footer className="flex-shrink-0 text-center py-2 text-xs text-gray-400 bg-white border-t border-gray-100">
+        v3
+      </footer>
     </div>
   )
 }
