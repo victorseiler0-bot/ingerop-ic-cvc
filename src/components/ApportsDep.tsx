@@ -1,5 +1,4 @@
 import { ApportsParams, ApportsResult } from '../engine/calcApports'
-import LockedRatioGroup from './LockedRatioGroup'
 
 interface Props {
   params: ApportsParams
@@ -7,13 +6,12 @@ interface Props {
   onChange: (p: ApportsParams) => void
 }
 
-function Row({ label, value, unit = 'kW', highlight = false, sub = false }: {
-  label: string; value: number | string; unit?: string; highlight?: boolean; sub?: boolean
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function Row({ label, value, unit = 'kW', highlight = false }: {
+  label: string; value: number | string; unit?: string; highlight?: boolean
 }) {
   return (
     <tr className={`border-b border-gray-100 ${highlight ? 'bg-ingerop-blue/5 font-bold' : ''}`}>
-      <td className={`py-2 pr-4 ${sub ? 'pl-6 text-gray-500 text-xs' : 'text-gray-700 text-sm'}`}>{label}</td>
+      <td className="py-2 pr-4 text-gray-700 text-sm">{label}</td>
       <td className={`py-2 text-right font-mono text-sm ${highlight ? 'text-ingerop-blue font-bold' : 'text-gray-800'}`}>
         {typeof value === 'number' ? value.toLocaleString('fr-FR', { maximumFractionDigits: 4 }) : value}
       </td>
@@ -110,7 +108,7 @@ export default function ApportsDep({ params: p, result: r, onChange }: Props) {
             <Row label="Puissances totales" value={r.puissanceTotale} />
             <Row label="Foisonnement" value={p.foisonnement} unit="" />
             <Row label="Puissances après foisonnement" value={r.puissanceApresF} highlight />
-            <Row label="Surpuissance" value={p.surpuissance} unit="kW" />
+            <Row label="Taux surpuissance" value={p.surpuissance} unit="kW" />
             <Row label="Puissances totales finales" value={r.puissanceFinale} highlight />
           </tbody>
         </table>
@@ -123,87 +121,12 @@ export default function ApportsDep({ params: p, result: r, onChange }: Props) {
           <span className="text-sm font-mono text-ingerop-blue w-8">{p.foisonnement}</span>
         </div>
         <div className="mt-2 flex items-center gap-3">
-          <span className="text-sm text-gray-600">Surpuissance</span>
+          <span className="text-sm text-gray-600">Taux surpuissance</span>
           <input type="number" value={p.surpuissance} min={0} max={500} step={5}
             onChange={e => set('surpuissance', parseFloat(e.target.value) || 0)}
             className="w-28 ml-auto border border-gray-300 rounded-lg px-2 py-1 text-sm font-mono" />
           <span className="text-xs text-gray-400">kW</span>
         </div>
-      </div>
-
-      {/* Traitement thermique */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-ingerop-blue mb-4">Traitement thermique</h2>
-        <LockedRatioGroup
-          items={[
-            { key: 'ratioVCV',     label: 'VCV',           color: '#0066CC' },
-            { key: 'ratioPlafond', label: 'Plafond actif', color: '#003A7A' },
-            { key: 'ratioArmoire', label: 'Armoire de clim', color: '#4A90D9' },
-            { key: 'ratioCTA',     label: 'CTA',           color: '#7CB9E8' },
-          ]}
-          values={{ ratioVCV: p.ratioVCV, ratioPlafond: p.ratioPlafond, ratioArmoire: p.ratioArmoire, ratioCTA: p.ratioCTA }}
-          onChange={vals => onChange({ ...p, ...vals })}
-        />
-        <table className="w-full mt-4">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-2 text-xs text-gray-500 font-medium">Équipement</th>
-              <th className="text-right py-2 text-xs text-gray-500 font-medium">kW</th>
-            </tr>
-          </thead>
-          <tbody>
-            <Row label="VCV" value={r.kWVCV} />
-            <Row label="Plafond actif" value={r.kWPlafond} highlight />
-            <Row label="Armoire de clim" value={r.kWArmoire} />
-            <Row label="CTA" value={r.kWCTA} />
-          </tbody>
-        </table>
-      </div>
-
-      {/* Production thermique */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-ingerop-blue mb-4">Production thermique</h2>
-
-        <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Chauffage</p>
-        <LockedRatioGroup
-          items={[
-            { key: 'ratioPAC',       label: 'PAC',            color: '#003A7A' },
-            { key: 'ratioReseau',    label: 'Réseau chaleur', color: '#0066CC' },
-            { key: 'ratioChaudiere', label: 'Chaudière gaz',  color: '#4A90D9' },
-            { key: 'ratioBiomasse',  label: 'Biomasse',       color: '#059669' },
-          ]}
-          values={{ ratioPAC: p.ratioPAC, ratioReseau: p.ratioReseau, ratioChaudiere: p.ratioChaudiere, ratioBiomasse: p.ratioBiomasse }}
-          onChange={vals => onChange({ ...p, ...vals })}
-        />
-
-        <div className="border-t border-gray-100 my-4" />
-
-        <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Froid</p>
-        <LockedRatioGroup
-          items={[
-            { key: 'ratioGroupeFroid', label: 'Groupe froid',       color: '#0891B2' },
-            { key: 'ratioReseauFroid', label: 'Réseau froid urbain', color: '#0066CC' },
-          ]}
-          values={{ ratioGroupeFroid: p.ratioGroupeFroid, ratioReseauFroid: p.ratioReseauFroid }}
-          onChange={vals => onChange({ ...p, ...vals })}
-        />
-
-        <table className="w-full mt-4">
-          <thead>
-            <tr className="border-b border-gray-200">
-              <th className="text-left py-2 text-xs text-gray-500 font-medium">Source</th>
-              <th className="text-right py-2 text-xs text-gray-500 font-medium">kW</th>
-            </tr>
-          </thead>
-          <tbody>
-            <Row label="PAC" value={r.kWPAC} />
-            <Row label="Réseau chaleur urbain" value={r.kWReseau} highlight />
-            <Row label="Chaudière gaz" value={r.kWChaudiere} />
-            <Row label="Biomasse" value={r.kWBiomasse} />
-            <Row label="Groupe froid" value={r.kWGroupeFroid} highlight />
-            <Row label="Réseau froid urbain" value={r.kWReseauFroid} />
-          </tbody>
-        </table>
       </div>
 
     </div>

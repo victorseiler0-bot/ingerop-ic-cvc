@@ -3,17 +3,17 @@ import { ApportsParams } from '../engine/calcApports'
 
 export const DEFAULT_CVC: CVCParams = {
   surfaceUtile: 9000,
+  typeBatiment: 'bureaux',
 
-  // 8.1 — ratios de référence onglet 2 (Apports)
   chaud:  { pac: 0.20, reseau: 0.80, chaudiere: 0.0 },
   froid:  { groupe: 0.30, reseau: 0.70 },
 
-  // 8.3 — valeurs Excel onglet 12 (plafond actif BARCOLAIR A11 ilôt)
-  ratioPlafond: 0.70,
-  icPlafondRef: 14.148,   // kgCO2eq/m²SU — onglet 12 Excel
-  icVCVRef:     6.458,    // kgCO2eq/m²SU — onglet 6 Excel
+  ratioPlafond:  0.70,
+  plafondModele: 'barcolair_a11_ilot',
+  icPlafondRef:  14.148,
+  icVCVRef:       6.458,
 
-  // 8.4 — configuration de référence onglet 6
+  ctaMode:   'carrier',
   ctaLignes: [
     { modelId: 'L600',  quantite: 3 },
     { modelId: 'L450',  quantite: 3 },
@@ -22,8 +22,8 @@ export const DEFAULT_CVC: CVCParams = {
     { modelId: 'L300',  quantite: 3 },
     { modelId: 'HR100', quantite: 5 },
   ],
+  ctaLibre: null,
 
-  // 8.5 — longueurs/poids de référence onglet 6 (SharePoint Ingerop, 9000 m²SU)
   gaineRectPoids:    42354,
   gaineCircLongueur: 360,
   tuyauT1Longueur:   846,
@@ -39,14 +39,4 @@ export const DEFAULT_APPORTS: ApportsParams = {
   puissanceECS: 90,
   foisonnement: 0.9,
   surpuissance: 0,
-  ratioVCV:     0.20,
-  ratioPlafond: 0.70,
-  ratioArmoire: 0.10,
-  ratioCTA:     0.00,
-  ratioPAC:     0.20,
-  ratioReseau:  0.80,
-  ratioChaudiere: 0.00,
-  ratioBiomasse:  0.00,
-  ratioGroupeFroid:  0.30,
-  ratioReseauFroid:  0.70,
 }
